@@ -1,10 +1,11 @@
 class AutoWappush
   
-  def initialize(login = nil, password = nil)
+  def initialize(login = nil, password = nil, gateway = 'movistar')
     wp_settings ||= YAML.load_file(RAILS_ROOT + '/config/autowp.yml') rescue {}
-    wp_login = login.blank? ? wp_settings['login'] : login.to_s
-    wp_password = password.blank? ? wp_settings['password'] : password.to_s
-    @wp_gateway ||= "wp_#{wp_settings['gateway']}_gateway".camelize.constantize.new(wp_login, wp_password)
+    @login = login.nil? ? wp_settings['login'] : login.to_s
+    @password = password.nil? ? wp_settings['password'] : password.to_s
+    wp_gateway = (wp_settings.nil? || wp_settings['gateway'].nil?) ? gateway : wp_settings['gateway']
+    @wp_gateway ||= "wp_#{wp_gateway}_gateway".camelize.constantize.new(@login, @password)
   end
   
   def send(message, url)
